@@ -54,6 +54,83 @@ cp -af $BAKPATH$FILEPATH$FILE $MODPATH$SYSTEMFILEPATH$FILE
 # sed -i '/<!-- # MIUI Edit Start -->/,/<!-- # MIUI Edit END -->/d;/<!-- MIUI fonts begin \/-->/,/<!-- MIUI fonts end \/-->/d;' $MODPATH$SYSTEMFILEPATH$FILE 
 # Disable OPlusSans for debugging
 # sed -i '$!N;/<!-- JiFeng.Tan@ANDROID.UIFramework, 2019-05-13 : Modified for SysSans fonts-->\n    <!--/,/.*--> <!--  #else \/\* OPLUS_FEATURE_FONT_FLIP \*\/-->/{s/<!--.*-->//g;s/<!--//g;s/-->//g};P;D' $MODPATH$SYSTEMFILEPATH$FILE
+
+
+# Upright Regular → Google Sans Regular
+sed -i 's|Roboto-Regular.ttf|GoogleSans-Regular.ttf|g' $MODPATH$SYSTEMFILEPATH$FILE
+
+# Upright Italic → Google Sans Italic
+sed -i 's|Roboto-Italic.ttf|GoogleSans-Italic.ttf|g' $MODPATH$SYSTEMFILEPATH$FILE
+
+# Monospace Regular → Google Sans Mono
+sed -i 's|RobotoMono-Regular.ttf|GoogleSansMono-Regular.ttf|g' $MODPATH$SYSTEMFILEPATH$FILE
+
+# ==========================
+# 变体轴配置 (Upright)
+# ==========================
+# UL = wght 400 opsz 17 GRAD -50
+sed -i '/GoogleSans-Light.ttf/a\
+    <axis tag="wght" stylevalue="400"/>\
+    <axis tag="opsz" stylevalue="17"/>\
+    <axis tag="GRAD" stylevalue="-50"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# UR = wght 400 opsz 17 GRAD 0
+sed -i '/GoogleSans-Regular.ttf/a\
+    <axis tag="wght" stylevalue="400"/>\
+    <axis tag="opsz" stylevalue="17"/>\
+    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# UM = wght 500 opsz 17 GRAD 0
+sed -i '/GoogleSans-Medium.ttf/a\
+    <axis tag="wght" stylevalue="500"/>\
+    <axis tag="opsz" stylevalue="17"/>\
+    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# USB = wght 600 opsz 17 GRAD 0
+sed -i '/GoogleSans-SemiBold.ttf/a\
+    <axis tag="wght" stylevalue="600"/>\
+    <axis tag="opsz" stylevalue="17"/>\
+    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# UB = wght 700 opsz 18 GRAD 0
+sed -i '/GoogleSans-Bold.ttf/a\
+    <axis tag="wght" stylevalue="700"/>\
+    <axis tag="opsz" stylevalue="18"/>\
+    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# UEB = wght 700 opsz 18 GRAD 100
+sed -i '/GoogleSans-ExtraBold.ttf/a\
+    <axis tag="wght" stylevalue="700"/>\
+    <axis tag="opsz" stylevalue="18"/>\
+    <axis tag="GRAD" stylevalue="100"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# ==========================
+# 变体轴配置 (Monospace)
+# ==========================
+# MR = wght 400
+sed -i '/GoogleSansMono-Regular.ttf/a\
+    <axis tag="wght" stylevalue="400"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# MM = wght 500
+sed -i '/GoogleSansMono-Medium.ttf/a\
+    <axis tag="wght" stylevalue="500"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# MSB = wght 600
+sed -i '/GoogleSansMono-SemiBold.ttf/a\
+    <axis tag="wght" stylevalue="600"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# MB = wght 700
+sed -i '/GoogleSansMono-Bold.ttf/a\
+    <axis tag="wght" stylevalue="700"/>' $MODPATH$SYSTEMFILEPATH$FILE
+
+# ==========================
+# 布尔/附加设置
+# ==========================
+# LSC = false → 删除 line spacing axis
+sed -i '/<axis tag="LSC"/d' $MODPATH$SYSTEMFILEPATH$FILE
+
+# OTLTAG (空) → 不操作
+
 sed -i 's/<alias name="serif-bold" to="serif" weight="700" \/>/<alias name="serif-thin" to="serif" weight="100" \/>\n<alias name="serif-light" to="serif" weight="300" \/>\n<alias name="serif-medium" to="serif" weight="400" \/>\n<alias name="serif-semi-bold" to="serif" weight="500" \/>\n<alias name="serif-bold" to="serif" weight="700" \/>\n<alias name="serif-black" to="serif" weight="900" \/>/g
 ' $MODPATH$SYSTEMFILEPATH$FILE
 sed -i '

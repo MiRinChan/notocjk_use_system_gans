@@ -60,93 +60,103 @@ cp -af $BAKPATH$FILEPATH$FILE $MODPATH$SYSTEMFILEPATH$FILE
 XML="$MODPATH/system/etc/fonts.xml"
 XML2="$MODPATH/system/etc/font_fallback.xml"
 
+
+
+XML="./fonts.xml"
+XML2="./font_fallback.xml"
+
 # 1) 把第一个 <family name="sans-serif"> -> <family>
 #    仅替换第一次出现（busybox sed 支持这种范围写法）
 sed -i '0,/<family name="sans-serif">/{s/<family name="sans-serif">/<family>/}' "$XML"
 
 # 2) 在第一个 <family> 前插入 Google Sans family 块（包含 weight<400 的补全）
 #    我们用 sed 的替换把第一个 "<family>" 替换为 <GoogleSans-block> + "<family>" 保留原始内容
-sed -i '0,/<family>/{s|<family>|'"$(cat <<'EOF'
-    <family name="sans-serif">
-        <font weight="200" style="normal">GoogleSans-Regular.ttf
-          <axis tag="wght" stylevalue="400" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="-50" />
-        </font>
-        <font weight="300" style="normal">GoogleSans-Regular.ttf
-          <axis tag="wght" stylevalue="400" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="-25" />
-        </font>
-        <font weight="400" style="normal">GoogleSans-Regular.ttf
-          <axis tag="wght" stylevalue="400" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="0" />
-        </font>
-        <font weight="500" style="normal">GoogleSans-Regular.ttf
-          <axis tag="wght" stylevalue="500" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="0" />
-        </font>
-        <font weight="600" style="normal">GoogleSans-Regular.ttf
-          <axis tag="wght" stylevalue="600" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="25" />
-        </font>
-        <font weight="700" style="normal">GoogleSans-Regular.ttf
-          <axis tag="wght" stylevalue="700" />
-          <axis tag="opsz" stylevalue="18" />
-          <axis tag="GRAD" stylevalue="100" />
-        </font>
+GOOGLESANS_BLOCK='    <family name="sans-serif">\n\
+        <!-- Extra lighter-weight entries (weight attr < 400) but axis wght stays 400) -->\n\
+        <font weight="100" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-100" />\n\
+        </font>\n\
+        <font weight="200" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-75" />\n\
+        </font>\n\
+        <font weight="300" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-50" />\n\
+        </font>\n\
+        <font weight="400" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-50" />\n\
+        </font>\n\
+        <font weight="500" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="500" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="0" />\n\
+        </font>\n\
+        <font weight="600" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="600" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="25" />\n\
+        </font>\n\
+        <font weight="700" style="normal">GoogleSans-Regular.ttf\n\
+          <axis tag="wght" stylevalue="700" />\n\
+          <axis tag="opsz" stylevalue="18" />\n\
+          <axis tag="GRAD" stylevalue="100" />\n\
+        </font>\n\
+        <!-- Italics -->\n\
+        <font weight="100" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-100" />\n\
+        </font>\n\
+        <font weight="200" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-75" />\n\
+        </font>\n\
+        <font weight="300" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-50" />\n\
+        </font>\n\
+        <font weight="400" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="400" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="-50" />\n\
+        </font>\n\
+        <font weight="500" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="500" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="0" />\n\
+        </font>\n\
+        <font weight="600" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="600" />\n\
+          <axis tag="opsz" stylevalue="17" />\n\
+          <axis tag="GRAD" stylevalue="25" />\n\
+        </font>\n\
+        <font weight="700" style="italic">GoogleSans-Italic.ttf\n\
+          <axis tag="wght" stylevalue="700" />\n\
+          <axis tag="opsz" stylevalue="18" />\n\
+          <axis tag="GRAD" stylevalue="100" />\n\
+        </font>\n\
+    </family>'
 
-        <font weight="200" style="italic">GoogleSans-Italic.ttf
-          <axis tag="wght" stylevalue="400" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="-50" />
-        </font>
-        <font weight="300" style="italic">GoogleSans-Italic.ttf
-          <axis tag="wght" stylevalue="400" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="-25" />
-        </font>
-
-        <font weight="400" style="italic">GoogleSans-Italic.ttf
-          <axis tag="wght" stylevalue="400" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="0" />
-        </font>
-        <font weight="500" style="italic">GoogleSans-Italic.ttf
-          <axis tag="wght" stylevalue="500" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="0" />
-        </font>
-        <font weight="600" style="italic">GoogleSans-Italic.ttf
-          <axis tag="wght" stylevalue="600" />
-          <axis tag="opsz" stylevalue="17" />
-          <axis tag="GRAD" stylevalue="25" />
-        </font>
-        <font weight="700" style="italic">GoogleSans-Italic.ttf
-          <axis tag="wght" stylevalue="700" />
-          <axis tag="opsz" stylevalue="18" />
-          <axis tag="GRAD" stylevalue="100" />
-        </font>
-    </family>
-
-<family|}" "$XML"
-EOF
-)"|}' "$XML"
+# 插入到第一个 <family> 前
+sed -i "0,/<family>/{s|<family>|$GOOGLESANS_BLOCK\n<family>|}" "$XML"
 
 sed -i 's/DroidSansMono.ttf/GoogleSansMono-Regular.ttf/g' $XML
 
-sed -i '/^\s*<family name="sans-serif">\s*$/{
-i\
-  <family name="sans-serif">\
-    <font supportedAxes="wght,opsz,GRAD" style="normal">GoogleSans-Regular.ttf<\/font>\
-    <font supportedAxes="wght,opsz,GRAD" style="italic">GoogleSans-Italic.ttf<\/font>\
-  <\/family>
-c\
-  <family>
-}' "$XML2"
+INSERT_BLOCK='<family name="sans-serif">\n    <font supportedAxes="wght,opsz,GRAD" style="normal">GoogleSans-Regular.ttf</font>\n    <font supportedAxes="wght,opsz,GRAD" style="italic">GoogleSans-Italic.ttf</font>\n</family>'
+
+# 用 [[:space:]]* 匹配空格
+sed -i "s|^[[:space:]]*<family name=\"sans-serif\">[[:space:]]*$|$INSERT_BLOCK\n<family>|" "$XML2"
+
+
 
 sed -i 's/<alias name="serif-bold" to="serif" weight="700" \/>/<alias name="serif-thin" to="serif" weight="100" \/>\n<alias name="serif-light" to="serif" weight="300" \/>\n<alias name="serif-medium" to="serif" weight="400" \/>\n<alias name="serif-semi-bold" to="serif" weight="500" \/>\n<alias name="serif-bold" to="serif" weight="700" \/>\n<alias name="serif-black" to="serif" weight="900" \/>/g
 ' $MODPATH$SYSTEMFILEPATH$FILE

@@ -61,10 +61,6 @@ XML="$MODPATH/system/etc/fonts.xml"
 XML2="$MODPATH/system/etc/font_fallback.xml"
 
 
-
-XML="./fonts.xml"
-XML2="./font_fallback.xml"
-
 # 1) 把第一个 <family name="sans-serif"> -> <family>
 #    仅替换第一次出现（busybox sed 支持这种范围写法）
 sed -i '0,/<family name="sans-serif">/{s/<family name="sans-serif">/<family>/}' "$XML"

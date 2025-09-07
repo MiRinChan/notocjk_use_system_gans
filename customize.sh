@@ -56,80 +56,101 @@ cp -af $BAKPATH$FILEPATH$FILE $MODPATH$SYSTEMFILEPATH$FILE
 # sed -i '$!N;/<!-- JiFeng.Tan@ANDROID.UIFramework, 2019-05-13 : Modified for SysSans fonts-->\n    <!--/,/.*--> <!--  #else \/\* OPLUS_FEATURE_FONT_FLIP \*\/-->/{s/<!--.*-->//g;s/<!--//g;s/-->//g};P;D' $MODPATH$SYSTEMFILEPATH$FILE
 
 
-# Upright Regular → Google Sans Regular
-sed -i 's|Roboto-Regular.ttf|GoogleSans-Regular.ttf|g' $MODPATH$SYSTEMFILEPATH$FILE
+# 创建目录并复制系统 fonts.xml
+mkdir -p "$MODPATH/system/etc"
+cp /system/etc/fonts.xml "$MODPATH/system/etc/fonts.xml" || exit 0
+cp /system/etc/font_fallback.xml "$MODPATH/system/etc/font_fallback.xml" || exit 0
 
-# Upright Italic → Google Sans Italic
-sed -i 's|Roboto-Italic.ttf|GoogleSans-Italic.ttf|g' $MODPATH$SYSTEMFILEPATH$FILE
+XML="$MODPATH/system/etc/fonts.xml"
+XML2="$MODPATH/system/etc/font_fallback.xml"
 
-# Monospace Regular → Google Sans Mono
-sed -i 's|RobotoMono-Regular.ttf|GoogleSansMono-Regular.ttf|g' $MODPATH$SYSTEMFILEPATH$FILE
+# 1) 把第一个 <family name="sans-serif"> -> <family>
+#    仅替换第一次出现（busybox sed 支持这种范围写法）
+sed -i '0,/<family name="sans-serif">/{s/<family name="sans-serif">/<family>/}' "$XML"
 
-# ==========================
-# 变体轴配置 (Upright)
-# ==========================
-# UL = wght 400 opsz 17 GRAD -50
-sed -i '/GoogleSans-Light.ttf/a\
-    <axis tag="wght" stylevalue="400"/>\
-    <axis tag="opsz" stylevalue="17"/>\
-    <axis tag="GRAD" stylevalue="-50"/>' $MODPATH$SYSTEMFILEPATH$FILE
+# 2) 在第一个 <family> 前插入 Google Sans family 块（包含 weight<400 的补全）
+#    我们用 sed 的替换把第一个 "<family>" 替换为 <GoogleSans-block> + "<family>" 保留原始内容
+sed -i '0,/<family>/{s|<family>|'"$(cat <<'EOF'
+    <family name="sans-serif">
+        <font weight="200" style="normal">GoogleSans-Regular.ttf
+          <axis tag="wght" stylevalue="400" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="-50" />
+        </font>
+        <font weight="300" style="normal">GoogleSans-Regular.ttf
+          <axis tag="wght" stylevalue="400" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="-25" />
+        </font>
+        <font weight="400" style="normal">GoogleSans-Regular.ttf
+          <axis tag="wght" stylevalue="400" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="0" />
+        </font>
+        <font weight="500" style="normal">GoogleSans-Regular.ttf
+          <axis tag="wght" stylevalue="500" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="0" />
+        </font>
+        <font weight="600" style="normal">GoogleSans-Regular.ttf
+          <axis tag="wght" stylevalue="600" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="25" />
+        </font>
+        <font weight="700" style="normal">GoogleSans-Regular.ttf
+          <axis tag="wght" stylevalue="700" />
+          <axis tag="opsz" stylevalue="18" />
+          <axis tag="GRAD" stylevalue="100" />
+        </font>
 
-# UR = wght 400 opsz 17 GRAD 0
-sed -i '/GoogleSans-Regular.ttf/a\
-    <axis tag="wght" stylevalue="400"/>\
-    <axis tag="opsz" stylevalue="17"/>\
-    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+        <font weight="200" style="italic">GoogleSans-Italic.ttf
+          <axis tag="wght" stylevalue="400" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="-50" />
+        </font>
+        <font weight="300" style="italic">GoogleSans-Italic.ttf
+          <axis tag="wght" stylevalue="400" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="-25" />
+        </font>
 
-# UM = wght 500 opsz 17 GRAD 0
-sed -i '/GoogleSans-Medium.ttf/a\
-    <axis tag="wght" stylevalue="500"/>\
-    <axis tag="opsz" stylevalue="17"/>\
-    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+        <font weight="400" style="italic">GoogleSans-Italic.ttf
+          <axis tag="wght" stylevalue="400" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="0" />
+        </font>
+        <font weight="500" style="italic">GoogleSans-Italic.ttf
+          <axis tag="wght" stylevalue="500" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="0" />
+        </font>
+        <font weight="600" style="italic">GoogleSans-Italic.ttf
+          <axis tag="wght" stylevalue="600" />
+          <axis tag="opsz" stylevalue="17" />
+          <axis tag="GRAD" stylevalue="25" />
+        </font>
+        <font weight="700" style="italic">GoogleSans-Italic.ttf
+          <axis tag="wght" stylevalue="700" />
+          <axis tag="opsz" stylevalue="18" />
+          <axis tag="GRAD" stylevalue="100" />
+        </font>
+    </family>
 
-# USB = wght 600 opsz 17 GRAD 0
-sed -i '/GoogleSans-SemiBold.ttf/a\
-    <axis tag="wght" stylevalue="600"/>\
-    <axis tag="opsz" stylevalue="17"/>\
-    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+<family|}" "$XML"
+EOF
+)"|}' "$XML"
 
-# UB = wght 700 opsz 18 GRAD 0
-sed -i '/GoogleSans-Bold.ttf/a\
-    <axis tag="wght" stylevalue="700"/>\
-    <axis tag="opsz" stylevalue="18"/>\
-    <axis tag="GRAD" stylevalue="0"/>' $MODPATH$SYSTEMFILEPATH$FILE
+sed -i 's/DroidSansMono.ttf/GoogleSansMono-Regular.ttf/g' $XML
 
-# UEB = wght 700 opsz 18 GRAD 100
-sed -i '/GoogleSans-ExtraBold.ttf/a\
-    <axis tag="wght" stylevalue="700"/>\
-    <axis tag="opsz" stylevalue="18"/>\
-    <axis tag="GRAD" stylevalue="100"/>' $MODPATH$SYSTEMFILEPATH$FILE
-
-# ==========================
-# 变体轴配置 (Monospace)
-# ==========================
-# MR = wght 400
-sed -i '/GoogleSansMono-Regular.ttf/a\
-    <axis tag="wght" stylevalue="400"/>' $MODPATH$SYSTEMFILEPATH$FILE
-
-# MM = wght 500
-sed -i '/GoogleSansMono-Medium.ttf/a\
-    <axis tag="wght" stylevalue="500"/>' $MODPATH$SYSTEMFILEPATH$FILE
-
-# MSB = wght 600
-sed -i '/GoogleSansMono-SemiBold.ttf/a\
-    <axis tag="wght" stylevalue="600"/>' $MODPATH$SYSTEMFILEPATH$FILE
-
-# MB = wght 700
-sed -i '/GoogleSansMono-Bold.ttf/a\
-    <axis tag="wght" stylevalue="700"/>' $MODPATH$SYSTEMFILEPATH$FILE
-
-# ==========================
-# 布尔/附加设置
-# ==========================
-# LSC = false → 删除 line spacing axis
-sed -i '/<axis tag="LSC"/d' $MODPATH$SYSTEMFILEPATH$FILE
-
-# OTLTAG (空) → 不操作
+sed -i '/^\s*<family name="sans-serif">\s*$/{
+i\
+  <family name="sans-serif">\
+    <font supportedAxes="wght,opsz,GRAD" style="normal">GoogleSans-Regular.ttf<\/font>\
+    <font supportedAxes="wght,opsz,GRAD" style="italic">GoogleSans-Italic.ttf<\/font>\
+  <\/family>
+c\
+  <family>
+}' "$XML2"
 
 sed -i 's/<alias name="serif-bold" to="serif" weight="700" \/>/<alias name="serif-thin" to="serif" weight="100" \/>\n<alias name="serif-light" to="serif" weight="300" \/>\n<alias name="serif-medium" to="serif" weight="400" \/>\n<alias name="serif-semi-bold" to="serif" weight="500" \/>\n<alias name="serif-bold" to="serif" weight="700" \/>\n<alias name="serif-black" to="serif" weight="900" \/>/g
 ' $MODPATH$SYSTEMFILEPATH$FILE

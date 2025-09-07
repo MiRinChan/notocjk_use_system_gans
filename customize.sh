@@ -56,10 +56,6 @@ cp -af $BAKPATH$FILEPATH$FILE $MODPATH$SYSTEMFILEPATH$FILE
 # sed -i '$!N;/<!-- JiFeng.Tan@ANDROID.UIFramework, 2019-05-13 : Modified for SysSans fonts-->\n    <!--/,/.*--> <!--  #else \/\* OPLUS_FEATURE_FONT_FLIP \*\/-->/{s/<!--.*-->//g;s/<!--//g;s/-->//g};P;D' $MODPATH$SYSTEMFILEPATH$FILE
 
 
-# 创建目录并复制系统 fonts.xml
-mkdir -p "$MODPATH/system/etc"
-cp /system/etc/fonts.xml "$MODPATH/system/etc/fonts.xml" || exit 0
-cp /system/etc/font_fallback.xml "$MODPATH/system/etc/font_fallback.xml" || exit 0
 
 XML="$MODPATH/system/etc/fonts.xml"
 XML2="$MODPATH/system/etc/font_fallback.xml"
